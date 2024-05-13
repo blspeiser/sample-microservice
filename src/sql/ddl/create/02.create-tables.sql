@@ -1,0 +1,15 @@
+-- Location Types
+CREATE TABLE TIMES_SERVICE.TS_LOCATION_TYPES (
+    ID integer NOT NULL,
+    TYPE character varying(32) NOT NULL
+);
+ALTER TABLE TIMES_SERVICE.TS_LOCATION_TYPES OWNER TO postgres;
+
+-- Locations
+CREATE TABLE TIMES_SERVICE.TS_LOCATIONS (
+    ID integer NOT NULL,
+    NAME character varying(64) NOT NULL,
+    TIMEZONE character varying(64) NOT NULL,
+    TYPE integer NOT NULL
+);
+ALTER TABLE TIMES_SERVICE.TS_LOCATIONS OWNER TO postgres;

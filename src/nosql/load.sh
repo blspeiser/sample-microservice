@@ -1,0 +1,1 @@
+mongoimport -d app -c Locations --file=$1

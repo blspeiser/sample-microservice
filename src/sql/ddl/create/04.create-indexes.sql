@@ -1,0 +1,6 @@
+-- Locations
+CREATE INDEX IDX_TS_LOCATIONS_NAME ON TIMES_SERVICE.TS_LOCATIONS 
+    USING btree (NAME varchar_ops) WITH (deduplicate_items='true');
+
+CREATE INDEX IDX_TS_LOCATIONS_TYPE ON TIMES_SERVICE.TS_LOCATIONS 
+    USING btree (TYPE) WITH (deduplicate_items='true');
