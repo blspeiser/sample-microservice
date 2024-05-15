@@ -10,7 +10,7 @@ import io.cambium.types.responses.GetTimeResponse;
 import io.cambium.utils.Strings;
 
 public class GetTimeFunction extends BaseFunction implements RequestHandler<GetTimeRequest, GetTimeResponse> {
-  private TimeService service = TimeService.INSTANCE;
+  private TimeService service = TimeService.Factory.INSTANCE;
 
   @Override
   public GetTimeResponse handleRequest(GetTimeRequest input, Context context) {

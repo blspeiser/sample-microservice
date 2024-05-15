@@ -1,46 +1,18 @@
 package io.cambium.services;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-
+import io.cambium.services.impl.TimeServiceBean;
 import io.cambium.types.models.Location;
 import io.cambium.types.models.TimeInformation;
 
-public class TimeService {
-  public static final TimeService INSTANCE = new TimeService();
-  
-  public TimeInformation getTime() {
-    return getTime(ZoneId.systemDefault(), "");
-  }
-  
-  public TimeInformation getTime(String timezone) {
-    if(null == timezone) return getTime(ZoneId.systemDefault(), "");
-    ZoneId zone = getZone(timezone);
-    return getTime(null == zone ? ZoneId.systemDefault() : zone, "");
+public interface TimeService {
+  public static class Factory {
+    public static final TimeService INSTANCE = new TimeServiceBean();
   }
 
-  public TimeInformation getTime(Location location) {
-    if(null == location) return getTime(ZoneId.systemDefault(), "");
-    ZoneId zone = getZone(location.timezone);
-    TimeInformation info = getTime(
-        null == zone ? ZoneId.systemDefault() : zone,
-        null == zone ? "" : location.id);
-    return info;
-  }
+  public TimeInformation getTime();
 
-  private ZoneId getZone(String timezone) {
-    return (null == timezone) ? ZoneId.systemDefault() : ZoneId.of(timezone);
-  }
+  public TimeInformation getTime(String timezone);
 
-  private TimeInformation getTime(ZoneId zone, String location) {
-    TimeInformation info = new TimeInformation();
-    info.date = LocalDate.now(zone);
-    info.time = LocalTime.now(zone);
-    info.timestamp = info.date.atTime(info.time).atZone(zone).toInstant().toEpochMilli();
-    info.timezone = zone.getId();
-    info.location = location;
-    return info;
-  }
+  public TimeInformation getTime(Location location);
 
 }
