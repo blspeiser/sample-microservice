@@ -1,12 +1,11 @@
 package io.cambium.api;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import io.cambium.types.requests.DeleteLocationRequest;
 import io.cambium.types.responses.DeleteLocationResponse;
 
-public class DeleteLocationFunction extends BaseFunction implements RequestHandler<DeleteLocationRequest, DeleteLocationResponse> {
+public class DeleteLocationFunction extends BaseFunction<DeleteLocationRequest, DeleteLocationResponse> {
   
   @Override
   public DeleteLocationResponse handleRequest(DeleteLocationRequest input, Context context) {

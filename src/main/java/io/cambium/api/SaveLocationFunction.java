@@ -1,14 +1,13 @@
 package io.cambium.api;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import io.cambium.types.models.Location;
 import io.cambium.types.requests.SaveLocationRequest;
 import io.cambium.types.responses.SaveLocationResponse;
 import io.cambium.utils.Strings;
 
-public class SaveLocationFunction extends BaseFunction implements RequestHandler<SaveLocationRequest, SaveLocationResponse> {
+public class SaveLocationFunction extends BaseFunction<SaveLocationRequest, SaveLocationResponse> {
   
   @Override
   public SaveLocationResponse handleRequest(SaveLocationRequest input, Context context) {

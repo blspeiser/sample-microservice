@@ -1,7 +1,6 @@
 package io.cambium.api;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import io.cambium.services.TimeService;
 import io.cambium.types.models.Location;
@@ -9,7 +8,7 @@ import io.cambium.types.requests.GetTimeRequest;
 import io.cambium.types.responses.GetTimeResponse;
 import io.cambium.utils.Strings;
 
-public class GetTimeFunction extends BaseFunction implements RequestHandler<GetTimeRequest, GetTimeResponse> {
+public class GetTimeFunction extends BaseFunction<GetTimeRequest, GetTimeResponse> {
   private TimeService service = TimeService.Factory.INSTANCE;
 
   @Override
