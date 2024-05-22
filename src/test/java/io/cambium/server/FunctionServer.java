@@ -1,5 +1,8 @@
 package io.cambium.server;
 
+import java.io.InputStream;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -16,8 +19,6 @@ import io.cambium.types.responses.GetTimeResponse;
 import io.cambium.types.responses.ListLocationsResponse;
 import io.cambium.types.responses.SaveLocationResponse;
 import io.undertow.Undertow;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
 
 public class FunctionServer {
@@ -31,98 +32,58 @@ public class FunctionServer {
       
       RoutingHandler routes = new RoutingHandler();
       
-      routes.get("/api/time", new HttpHandler() {
-        public void handleRequest(HttpServerExchange exchange) throws Exception {
-          if(exchange.isInIoThread()) {
-            exchange.dispatch(this);
-            return;
-          }
+      routes.get("/api/time", new FunctionHandler(mapper, new FunctionExecutor() {
+        public Object execute(InputStream is) throws HttpStatusException, JsonProcessingException {
+          GetTimeRequest request = null;
+          GetTimeFunction function = new GetTimeFunction();
           try {
-            exchange.startBlocking();
-            GetTimeRequest request = null;
-            GetTimeFunction function = new GetTimeFunction();
-            try {
-              request = mapper.readValue(exchange.getInputStream(), GetTimeRequest.class);
-            } catch(Exception e) {
-              request = new GetTimeRequest();
-            }
-            GetTimeResponse response = function.handleRequest(request, null);
-            exchange.getResponseSender().send(mapper.writeValueAsString(response));
+            request = mapper.readValue(is, GetTimeRequest.class);
           } catch(Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            request = new GetTimeRequest();
+          }
+          GetTimeResponse response = function.handleRequest(request, null);
+          return super.mapper.writeValueAsString(response);  
+        }
+      }));
+      routes.get("/api/locations", new FunctionHandler(mapper, new FunctionExecutor() {
+        public Object execute(InputStream is) throws HttpStatusException, JsonProcessingException {
+          ListLocationsRequest request = null;
+          ListLocationsFunction function = new ListLocationsFunction();
+          try {
+            request = mapper.readValue(is, ListLocationsRequest.class);
+          } catch(Exception e) {
+            request = new ListLocationsRequest();
+          }
+          ListLocationsResponse response = function.handleRequest(request, null);
+          return mapper.writeValueAsString(response);  
+        }
+      }));
+      routes.post("/api/locations", new FunctionHandler(mapper, new FunctionExecutor() {
+        public Object execute(InputStream is) throws HttpStatusException, JsonProcessingException {
+          SaveLocationRequest request = null;
+          SaveLocationFunction function = new SaveLocationFunction();
+          try {
+            request = mapper.readValue(is, SaveLocationRequest.class);
+            SaveLocationResponse response = function.handleRequest(request, null);
+            return mapper.writeValueAsString(response);
+          } catch(Exception e) {
+            throw new HttpStatusException(400);
           }  
         }
-      });
-      routes.get("/api/locations", new HttpHandler() {
-        public void handleRequest(HttpServerExchange exchange) throws Exception {
-          if(exchange.isInIoThread()) {
-            exchange.dispatch(this);
-            return;
-          }
+      }));
+      routes.delete("/api/locations", new FunctionHandler(mapper, new FunctionExecutor() {
+        public Object execute(InputStream is) throws HttpStatusException, JsonProcessingException {
+          DeleteLocationRequest request = null;
+          DeleteLocationFunction function = new DeleteLocationFunction();
           try {
-            exchange.startBlocking();
-            ListLocationsRequest request = null;
-            ListLocationsFunction function = new ListLocationsFunction();
-            try {
-              request = mapper.readValue(exchange.getInputStream(), ListLocationsRequest.class);
-            } catch(Exception e) {
-              request = new ListLocationsRequest();
-            }
-            ListLocationsResponse response = function.handleRequest(request, null);
-            exchange.getResponseSender().send(mapper.writeValueAsString(response));
+            request = mapper.readValue(is, DeleteLocationRequest.class);
+            DeleteLocationResponse response = function.handleRequest(request, null);
+            return mapper.writeValueAsString(response);
           } catch(Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-          }  
-        }
-      });
-      routes.post("/api/locations", new HttpHandler() {
-        public void handleRequest(HttpServerExchange exchange) throws Exception {
-          if(exchange.isInIoThread()) {
-            exchange.dispatch(this);
-            return;
+            throw new HttpStatusException(400);
           }
-          try {
-            exchange.startBlocking();
-            SaveLocationRequest request = null;
-            SaveLocationFunction function = new SaveLocationFunction();
-            try {
-              request = mapper.readValue(exchange.getInputStream(), SaveLocationRequest.class);
-              SaveLocationResponse response = function.handleRequest(request, null);
-              exchange.getResponseSender().send(mapper.writeValueAsString(response));
-            } catch(Exception e) {
-              exchange.setStatusCode(400);
-            }
-          } catch(Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-          }  
         }
-      });
-      routes.delete("/api/locations", new HttpHandler() {
-        public void handleRequest(HttpServerExchange exchange) throws Exception {
-          if(exchange.isInIoThread()) {
-            exchange.dispatch(this);
-            return;
-          }
-          try {
-            exchange.startBlocking();
-            DeleteLocationRequest request = null;
-            DeleteLocationFunction function = new DeleteLocationFunction();
-            try {
-              request = mapper.readValue(exchange.getInputStream(), DeleteLocationRequest.class);
-              DeleteLocationResponse response = function.handleRequest(request, null);
-              exchange.getResponseSender().send(mapper.writeValueAsString(response));
-            } catch(Exception e) {
-              exchange.setStatusCode(400);
-            }
-          } catch(Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-          }  
-        }
-      });
+      }));
       routes.setFallbackHandler(exchange -> {
         exchange.setStatusCode(404);
       });
