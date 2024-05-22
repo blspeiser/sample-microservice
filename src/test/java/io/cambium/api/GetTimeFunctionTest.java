@@ -13,7 +13,7 @@ import io.cambium.types.requests.GetTimeRequest;
 import io.cambium.types.responses.GetTimeResponse;
 
 public class GetTimeFunctionTest {
-  private boolean useSQL = false;
+  private boolean useSQL = true;
   GetTimeFunction function = new GetTimeFunction();
   
   public GetTimeFunctionTest() {
